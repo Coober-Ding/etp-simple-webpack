@@ -1,0 +1,2 @@
+将css转为js
+js执行会插入一个style标签，或者向已有的style标签里插入css代码
