@@ -2,6 +2,7 @@ const runLoaders  = require("../loader-runner/LoaderRunner.js").runLoaders
 const Source = require('../loaders/core/Source.js')
 const parse = require('./util.js')
 const resolveDepence = require('./util.js').resolveDepence
+const resolver = require('../path-resolve/index.js')
 /**
  * 和webpack的NormalModule类似
  * 一个输入文件会创建一个NormalModule
@@ -64,6 +65,7 @@ class NormalModule {
       throw new Error('source[type] cant be resolved ')
     }
     this.depence = resolveDepence (ast)
+    this.depence = this.depence.map(dep => resolver.resolve(dep, this.resource.name, ''))
     return
   }
   createLoaderContext () {

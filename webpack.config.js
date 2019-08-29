@@ -30,7 +30,8 @@ var config = {
           options: {
             "presets": [
               ["@babel/preset-env", {
-                "useBuiltIns": false,
+                "useBuiltIns": 'entry',
+                "corejs": '3',
                 "targets": {
                   "node": "10.10.0"
                 }
