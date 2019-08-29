@@ -6,12 +6,15 @@ class Result {
     this.code = code
     this.sourceMap = sourceMap
 
-    this.depence = new Set()
     this.useTime = 0
+    let depence = new Set()
     compilations.forEach(compilation => {
-      compilation.module.depence.forEach(dep => this.depence.add(dep))
+      // 把depence合并
+      compilation.module.depence.forEach(dep => depence.add(dep))
+      // 把useTime相加
       this.useTime = this.useTime + compilation.useTime
     })
+    this.depence = Array.from(depence)
     
   }
   concatCode (compilations) {
