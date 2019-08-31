@@ -126,9 +126,8 @@ function processResource(loaderContext, callback) {
 	loaderContext.loaderIndex = loaderContext.loaderExecuters.length - 1;
 
 	var resource = loaderContext.resource;
-	if(resource.fileBuffer) {
-		// options.resourceBuffer = resource.fileBuffer;
-		iterateNormalLoaders(loaderContext, resource.fileBuffer, callback);
+	if(resource.code) {
+		iterateNormalLoaders(loaderContext, resource.code, callback);
 	} else {
 		iterateNormalLoaders(loaderContext, null, callback);
 	}
@@ -163,7 +162,8 @@ function runLoaders(options, callback) {
 	// read options
 	var resource = options.resource;
 	var loaders = options.loaders || [];
-	var loaderContext = options.context || {};
+	var compileOption = options.compileOption
+	var loaderContext = {};
 
 	loaderExecuters = loaders.map(createLoaderExecuter);
 	
@@ -172,6 +172,7 @@ function runLoaders(options, callback) {
 	loaderContext.resource = resource
 	loaderContext.async = null;
 	loaderContext.callback = null;
+	loaderContext.compileOption = compileOption
 
 	iteratePitchingLoaders(loaderContext, function(err, result) {
 		if(err) {

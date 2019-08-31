@@ -9,17 +9,14 @@ test("try compile", () => {
 
   webpack.compile([{
     name: '/main/main.css',
-    contextPath: '/iot',
-    fileBuffer: file1
+    code: file1
   },{
     name: '/main/main.vue',
-    contextPath: '/iot',
-    fileBuffer: file2
+    code: file2
   },{
     name: '/main/main.js',
-    contextPath: '/iot',
-    fileBuffer: file3
-  }]).then(result => {
+    code: file3
+  }],{bundle:true,contextPath: '/iot'}).then(result => {
     console.log(result.code)
     expect(result.depence).toContain('/main/a.js')
     expect(result.depence).toContain('/d.js')

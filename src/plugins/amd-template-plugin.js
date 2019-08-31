@@ -80,7 +80,7 @@ class AmdTemplatePlugin {
     })
   }
   render (_module) {
-    let basePath = path.join((_module.resource.contextPath || '/'), 'webpack')
+    let basePath = path.join((_module.compileOption.contextPath || '/'), 'webpack')
     let currentFilePath = _module.resource.name
     // 当前模块名 拼上/${contextPath}/webpack
     let moduleName = path.join(basePath, _module.resource.name)

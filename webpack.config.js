@@ -22,33 +22,33 @@ var config = {
   cache: false,
   mode: 'development',
   devtool: false,
-  module: {
-    rules: [{
-        test: /\.js$/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            "presets": [
-              ["@babel/preset-env", {
-                "useBuiltIns": 'entry',
-                "corejs": '3',
-                "targets": {
-                  "node": "10.10.0"
-                }
-              }],
-            ]
-          }
-        },
-        exclude: [
-          path.resolve(__dirname, 'node_modules/core-js'),
-          path.resolve(__dirname, 'node_modules/lodash'),
-          path.resolve(__dirname, 'node_modules/debug'),
-          path.resolve(__dirname, 'node_modules/vue-template-compiler'),
-          path.resolve(__dirname, 'node_modules/vue-template-es2015-compiler')
-        ]
-      }
-    ],
-  },
+  // module: {
+  //   rules: [{
+  //       test: /\.js$/,
+  //       use: {
+  //         loader: 'babel-loader',
+  //         options: {
+  //           "presets": [
+  //             ["@babel/preset-env", {
+  //               "useBuiltIns": 'entry',
+  //               "corejs": '3',
+  //               "targets": {
+  //                 "node": "10.10.0"
+  //               }
+  //             }],
+  //           ]
+  //         }
+  //       },
+  //       exclude: [
+  //         path.resolve(__dirname, 'node_modules/core-js'),
+  //         path.resolve(__dirname, 'node_modules/lodash'),
+  //         path.resolve(__dirname, 'node_modules/debug'),
+  //         path.resolve(__dirname, 'node_modules/vue-template-compiler'),
+  //         path.resolve(__dirname, 'node_modules/vue-template-es2015-compiler')
+  //       ]
+  //     }
+  //   ],
+  // },
   plugins: [
     new BundleAnalyzerPlugin({
       analyzerMode: 'static',

@@ -1,22 +1,15 @@
 const Compiler = require('./Compiler.js')
 const resolver = require('../path-resolve/index.js')
-class Result {
+class BundleResult {
   constructor (compilations) {
     let {code, sourceMap} = this.concatCode(compilations)
+    let depence = this.concatDepence(compilations)
+
     this.code = code
     this.sourceMap = sourceMap
-
-    this.useTime = 0
-    let depence = new Set()
-    compilations.forEach(compilation => {
-      // 把depence合并
-      compilation.module.depence.forEach(dep => depence.add(dep))
-      // 把useTime相加
-      this.useTime = this.useTime + compilation.useTime
-    })
-    this.depence = Array.from(depence)
-    
+    this.depence = depence
   }
+
   concatCode (compilations) {
     let code = ''
     compilations.forEach(compilation => {
@@ -27,28 +20,53 @@ class Result {
       sourceMap: null
     }
   }
+  concatDepence (compilations) {
+    let depence = new Set()
+    compilations.forEach(compilation => {
+      // 把depence合并
+      compilation.module.depence.forEach(dep => depence.add(dep))
+    })
+    return Array.from(depence)
+  }
 }
+
+class Result {
+  constructor (compilation) {
+    this.code = compilation.module.source.content
+    this.sourceMap = null
+    this.depence = compilation.module.depence
+  }
+}
+
 class SimpleWebpack {
   constructor () {
     const options = require('./webpack.config.js')
     this.options = options
     this.compiler = new Compiler(options)
   }
-  compile (resource) {
-    if (!Array.isArray(resource)) {
-      resource = [resource]
-    }
-    return Promise.all(resource.map(res => this._compile(res)))
+  compile (resource, compileOption) {
+    if (Array.isArray(resource)) {
+      return Promise.all(resource.map(res => this._compile(res, compileOption)))
       .then(compilations => {
-        return new Result(compilations) 
+        if (compileOption.bundle) {
+          return new BundleResult(compilations)
+        } else {
+          return compilations.map(compilation => new Result(compilation))
+        }
       })
+    } else {
+      return this._compile(resource, compileOption)
+      .then(compilation => {
+        return new Result(compilation)
+      })
+    }
     
   }
-  _compile (resource) {
+  _compile (resource, compileOption) {
     if (!resolver.isAbsolute(resource.name)) {
       return Promise.reject(new Error('invalid resource name,it must be a absolute path'))
     }
-    return this.compiler.compile(resource)
+    return this.compiler.compile(resource, compileOption)
   }
 }
 module.exports = SimpleWebpack

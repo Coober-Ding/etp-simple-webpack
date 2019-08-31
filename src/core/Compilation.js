@@ -11,7 +11,7 @@ const {
 */
 class Compilation extends Tapable{
 
-  constructor (compiler, resource) {
+  constructor (compiler, resource, compileOption) {
     super()
 
     this.hooks = {
@@ -21,6 +21,7 @@ class Compilation extends Tapable{
     }
     this.compiler = compiler
     this.resource = resource
+    this.compileOption = compileOption
     this.module = null
     this.finished = false
     this.result = null

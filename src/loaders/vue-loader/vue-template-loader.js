@@ -5,7 +5,7 @@ const assertUrlPlugin = require('./assertUrl.js')
 const transpile = require('vue-template-es2015-compiler')
 
 module.exports = function VueTemplateLoader (multiSource) {
-  let contextPath = this.resource.contextPath || '/'
+  let contextPath = this.compileOption.contextPath || '/'
   let source = multiSource.findOnePartByScript('vue-template')
   if (!source)
     return multiSource
