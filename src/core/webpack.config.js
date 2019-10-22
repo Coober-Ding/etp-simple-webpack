@@ -6,7 +6,7 @@ const vueSpliteLoader = require('../loaders/vue-loader/vue-splite-loader.js')
 const vueTemplateLoader = require('../loaders/vue-loader/vue-template-loader.js')
 const vueBabelLoader = require('../loaders/vue-loader/vue-babel-loader.js')
 const vueComboLoader = require('../loaders/vue-loader/vue-combo-loader.js')
-const vueStyleLoader = require('../loaders/vue-loader/vue-style-loader.js')
+const vueCssLoader = require('../loaders/vue-loader/vue-css-loader.js')
 
 const AmdTemplatePlugin = require('../plugins/amd-template-plugin.js')
 const TracePlugin = require('../plugins/trace-plugin.js')
@@ -81,11 +81,9 @@ var config = {
           options: babelConfig
         },
         {
-          loader: 'vue-style-loader'
+          loader: 'vue-css-loader'
         },
-        //{
-        //   loader: 'vue-css-loader'
-        // },{
+        // {
         //   loader: 'vue-sass-loader'
         // },
         {
@@ -104,7 +102,7 @@ var config = {
     'vue-template-loader': vueTemplateLoader,
     'vue-babel-loader': vueBabelLoader,
     'vue-combo-loader':vueComboLoader,
-    'vue-style-loader': vueStyleLoader,
+    'vue-css-loader': vueCssLoader,
     'css-loader': cssLoader
   },
   plugins: [new AmdTemplatePlugin(), new TracePlugin()]

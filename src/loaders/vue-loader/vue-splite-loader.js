@@ -3,7 +3,7 @@ const Source = require('../core/Source.js')
 const compiler = require('vue-template-compiler/build.js')
 module.exports = function VuePreLoader (fileBuffer) {
   let parts = []
-  let result = compiler.parseComponent(fileBuffer, { pad: 'line' });
+  let result = compiler.parseComponent(fileBuffer);
 
   let scriptPart = new Source(Source.TYPE.STRING, 'js', result.script.content)
   scriptPart.origin = fileBuffer

@@ -1,8 +1,8 @@
 <template>
   <div>
     <div>hello world</div>
-    <img src="a.js"/>
-    <img :src="'a.js'"/>
+    <img src="a.png"/>
+    <img :src="'b.png'"/>
   </div>
 </template>
 <script>
@@ -38,9 +38,23 @@ export {a}
 
 </script>
 <style>
+  @import url('./a.css');
+  @import url('a.css');
   .a {
     color: white;
   }
+  div {
+    color: red;
+    background: url('./logo.png');
+    background: url(./logo.png);
+  }
+</style>
+<style>
+  @import url('./b.css');
+  span {
+    color: white;
+  }
+
 </style>
 
 

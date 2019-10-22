@@ -18,7 +18,7 @@ class NormalModuleFactory {
     normalModule.resource = compilation.resource
     normalModule.compiler = this.compiler
     normalModule.loaders = this.resolveLoader(compilation.resource)
-    normalModule.compileOption = compilation.compileOption
+    normalModule.compileOptions = compilation.compileOptions
     return normalModule
   }
 

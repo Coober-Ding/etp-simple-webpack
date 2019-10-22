@@ -26,7 +26,7 @@ class NormalModule {
     this.depence = []
     // ioc
     this.compiler = null
-    this.compileOption = null
+    this.compileOptions = null
   }
   // 调用loader和parser获得处理后的结果
   build () {
@@ -46,7 +46,7 @@ class NormalModule {
           resource: this.resource,
           loaders: this.loaders,
           context: loaderContext,
-          compileOption: this.compileOption
+          compileOptions: this.compileOptions
         },function (err, result) {
           if (err) {
             reject(err)

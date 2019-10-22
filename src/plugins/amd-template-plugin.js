@@ -4,8 +4,7 @@ const esm2AmdPlugin = require('@babel/plugin-transform-modules-amd')
 const generate = require('@babel/generator').default
 const path = require('path')
 const resolver = require('../path-resolve/index.js')
-var dynamicImportPlugin = function({ types: t }) {
-  let useAsyncImport = false
+var dynamicImportPlugin = function() {
 	return {
 		visitor: {
       Import (path) {
@@ -15,32 +14,16 @@ var dynamicImportPlugin = function({ types: t }) {
         let callee = path.node
         callee.type = 'Identifier'
         callee.name = 'asyncImport'
-        if (!useAsyncImport) {
-          useAsyncImport = true
-        }
-      },
-      Program: {
-        exit (path) {
-          if (useAsyncImport) {
-            let body = path.node.body
-            body.unshift(
-              t.importDeclaration(
-                [t.importDefaultSpecifier(t.identifier('asyncImport'))],
-                t.stringLiteral('async-import')
-              )
-            )
-          }
-        }
       }
     }
-  };
+  }
 }
-var pathResolvePlugin = function (currentFilePath, _basePath) {
+var pathResolvePlugin = function (currentFilePath) {
   return function () {
     return {
       visitor: {
         ImportDeclaration (path) {
-          path.node.source.value = resolver.resolve(path.node.source.value, currentFilePath, _basePath)
+          path.node.source.value = resolver.resolve(path.node.source.value, currentFilePath, '/')
         },
         // 动态import 只处理import('xxxxx')参数为String的情况
         Import (path) {
@@ -49,7 +32,7 @@ var pathResolvePlugin = function (currentFilePath, _basePath) {
           }
           let importArg = path.parent.arguments[0]
           if (importArg && importArg.type === 'StringLiteral') {
-            importArg.value = resolver.resolve(importArg.value, currentFilePath, _basePath)
+            importArg.value = resolver.resolve(importArg.value, currentFilePath, '/')
           }
         }
       }
@@ -80,16 +63,14 @@ class AmdTemplatePlugin {
     })
   }
   render (_module) {
-    let basePath = path.join((_module.compileOption.contextPath || '/'), 'webpack')
     let currentFilePath = _module.resource.name
-    // 当前模块名 拼上/${contextPath}/webpack
-    let moduleName = path.join(basePath, _module.resource.name)
+    let moduleName = _module.resource.name
     let source = _module.source
     let ast = source.content
     let result = {ast}
     
     // 处理import的路径
-    result = babel.transformFromAstSync(result.ast, null, {ast: true, code: false, plugins: [pathResolvePlugin(currentFilePath, basePath)]})
+    result = babel.transformFromAstSync(result.ast, null, {ast: true, code: false, plugins: [pathResolvePlugin(currentFilePath)]})
     // 处理动态import
     result = babel.transformFromAstSync(result.ast, null, {ast: true, code: false, plugins: [dynamicImportPlugin]})
     // 处理为amd模块

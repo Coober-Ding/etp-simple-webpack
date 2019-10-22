@@ -43,12 +43,12 @@ class Compiler extends Tapable {
       plugin.apply(this)
     })
   }
-  createCompilation (resource, compileOption) {
-    let compilation = new Compilation(this, resource, compileOption)
+  createCompilation (resource, compileOptions) {
+    let compilation = new Compilation(this, resource, compileOptions)
     this.hooks.compilation.call(compilation)
     return compilation
   }
-  compile (resource, compileOption) {
+  compile (resource, compileOptions) {
     return new Promise((resolve, reject) => {
       let finalCallback = (err, compilation) => {
         if (err) {
@@ -69,7 +69,7 @@ class Compiler extends Tapable {
       
             this.hooks.compile.call(resource);
             // 创建compilation
-            const compilation = this.createCompilation(resource, compileOption);
+            const compilation = this.createCompilation(resource, compileOptions);
             // compilation接管编译流程
             compilation.compile(err => {
               if (err) return finalCallback(err);

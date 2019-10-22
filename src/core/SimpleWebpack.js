@@ -44,29 +44,29 @@ class SimpleWebpack {
     this.options = options
     this.compiler = new Compiler(options)
   }
-  compile (resource, compileOption) {
+  compile (resource, compileOptions) {
     if (Array.isArray(resource)) {
-      return Promise.all(resource.map(res => this._compile(res, compileOption)))
+      return Promise.all(resource.map(res => this._compile(res, compileOptions)))
       .then(compilations => {
-        if (compileOption.bundle) {
+        if (compileOptions.bundle && compilations.length > 1) {
           return new BundleResult(compilations)
         } else {
           return compilations.map(compilation => new Result(compilation))
         }
       })
     } else {
-      return this._compile(resource, compileOption)
+      return this._compile(resource, compileOptions)
       .then(compilation => {
         return new Result(compilation)
       })
     }
     
   }
-  _compile (resource, compileOption) {
+  _compile (resource, compileOptions) {
     if (!resolver.isAbsolute(resource.name)) {
       return Promise.reject(new Error('invalid resource name,it must be a absolute path'))
     }
-    return this.compiler.compile(resource, compileOption)
+    return this.compiler.compile(resource, compileOptions)
   }
 }
 module.exports = SimpleWebpack
