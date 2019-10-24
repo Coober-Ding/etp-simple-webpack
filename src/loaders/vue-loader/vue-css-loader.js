@@ -14,13 +14,11 @@ module.exports = function VueCssLoader (multiSource) {
   var plugins = []
   // 处理url路径
   plugins.push(urlPlugin({
-    contextPath: this.compileOptions.contextPath,
-    currentFilePath: this.resource.name
+    pathResolver: this.pathResolver
   }))
   // 处理import
   plugins.push(importPlugin({
-    contextPath: this.compileOptions.contextPath,
-    currentFilePath: this.resource.name
+    pathResolver: this.pathResolver
   }))
 
   return Promise.all(styleParts.map(part => postcss(plugins).process(part.content)))

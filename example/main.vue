@@ -9,7 +9,7 @@
 import a from 'a.js'
 import {d,e,f} from '/d.js'
 
-var cp = {
+export default {
   data () {
     return {
       d: d,
@@ -33,7 +33,7 @@ var cp = {
     }
   }
 }
-export default cp
+
 export {a}
 
 </script>

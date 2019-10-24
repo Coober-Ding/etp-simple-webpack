@@ -3,7 +3,8 @@ const testRelativePath = /^((\.\/)|(\.\.\/)).*/
 const testAbsolutePath = /^(\/).*/
 const testUrl = /^(https?|base64|ftp|file):\/\/.*/
 const testDataUrl = /^data:[a-zA-Z1-9\/;]*,/
-module.exports.resolve = function resolve (path, currentFilePath, contextPath) {
+
+function _resolve (path, currentFilePath, contextPath) {
   let result = path
   let curPath = pathUtil.join(currentFilePath, '../')
   //如果是url，则跳过
@@ -30,8 +31,36 @@ function isRelative (p) {
 function isUrl (p) {
   return testUrl.test(p) || testDataUrl.test(p)
 }
+module.exports.resolve = _resolve
+
 module.exports.isAbsolute = isAbsolute
 
 module.exports.isRelative = isRelative
 
 module.exports.isUrl = isUrl
+
+module.exports.PathResolver = class {
+  constructor (currentFilePath, contextPath, ingnoreExpr) {
+    this.currentFilePath = currentFilePath
+    this.contextPath = contextPath
+    this.ingnoreExpr = ingnoreExpr && new RegExp(ingnoreExpr)
+  }
+  resolve (path) {
+    if (this.ingnoreExpr != null && this.ingnoreExpr.test(path)) {
+      return path
+    }
+    return _resolve(path, this.currentFilePath, this.contextPath)
+  }
+  resolveImport (path) {
+    if (this.ingnoreExpr != null && this.ingnoreExpr.test(path)) {
+      return path
+    }
+    return _resolve(path, this.currentFilePath, '/')
+  }
+  isAbsolute (p) {
+    return isAbsolute(p)
+  }
+  isUrl (p) {
+    return isUrl(p)
+  }
+}

@@ -163,6 +163,7 @@ function runLoaders(options, callback) {
 	var resource = options.resource;
 	var loaders = options.loaders || [];
 	var compileOptions = options.compileOptions
+	var pathResolver = options.pathResolver
 	var loaderContext = {};
 
 	loaderExecuters = loaders.map(createLoaderExecuter);
@@ -173,6 +174,7 @@ function runLoaders(options, callback) {
 	loaderContext.async = null;
 	loaderContext.callback = null;
 	loaderContext.compileOptions = compileOptions
+	loaderContext.pathResolver = pathResolver
 
 	iteratePitchingLoaders(loaderContext, function(err, result) {
 		if(err) {

@@ -1,6 +1,7 @@
 const MultiSource = require('../core/MultiSource.js')
 const Source = require('../core/Source.js')
 const traverse = require('@babel/traverse').default
+const template = require("babel-template")
 
 function getExportDefaultObjNode (ast) {
   let exportDefaultNode = null
@@ -13,32 +14,46 @@ function getExportDefaultObjNode (ast) {
         })
         if (exportDefaultPath) {
           let declarationPath = exportDefaultPath.get('declaration')
-          if (declarationPath.isObjectExpression()) {
-            exportDefaultNode = declarationPath.node
-          } else if (declarationPath.isIdentifier()) {
-            let varName = declarationPath.node.name
-            let varDeclarationPath = bodyPath.find(_path => {
-              return _path.isVariableDeclaration()
-            })
-            if (varDeclarationPath) {
-              let varPath = varDeclarationPath.get('declarations').find(_path => {
-                return _path.get('id').node.name == varName
-              })
-              if (varPath) {
-                let initPath = varPath.get('init')
-                if (initPath.isObjectExpression()) {
-                  exportDefaultNode = initPath.node
-                }
-              }
-            }
-          }
+          exportDefaultNode =  declarationPath.node
         }
       }
     }
   })
   return exportDefaultNode
 }
-
+function getDeclaraObjNodeByName(ast, name) {
+  let ret = null
+  traverse(ast, {
+    Program: {
+      exit (path) {
+        let bodyPath = path.get('body')
+        bodyPath.filter(p => p.isVariableDeclaration()).forEach(_path => {
+          _path.get('declarations').forEach(p => {
+            if (p.get('id').get('name').node == name) {
+              ret = p.get('init').node
+            }
+          })
+        })
+      }
+    }
+  })
+  return ret
+}
+function replaceExportDefaultNode (ast, node) {
+  traverse(ast, {
+    Program: {
+      exit (path) {
+        let bodyPath = path.get('body')
+        let exportDefaultPath = bodyPath.find(_path => {
+          return _path.isExportDefaultDeclaration()
+        })
+        if (exportDefaultPath) {
+          exportDefaultPath.node.declaration = node
+        }
+      }
+    }
+  })
+}
 module.exports = function (multiSource) {
   let scriptPart = multiSource.findOnePartByScript('js')
   let templatePart = multiSource.findOnePartByScript('vue-template|js')
@@ -60,12 +75,18 @@ module.exports = function (multiSource) {
     }
     // 如果已经有render函数则报错
     
-    if (exportDefaultNode.properties.find(prop => prop.key.name === 'render')) {
-      throw new Error('vue with template already has render function')
-    }
+    // if (exportDefaultNode.properties.find(prop => prop.key.name === 'render')) {
+    //   throw new Error('vue with template already has render function')
+    // }
+
     let templateAst = templatePart.content
-    let mixinProps = getExportDefaultObjNode(templateAst).properties
-    Array.prototype.push.apply(exportDefaultNode.properties,mixinProps)
+    let mixinObjNode = getDeclaraObjNodeByName(templateAst, 'templateMixin')
+    // Array.prototype.push.apply(exportDefaultNode.properties,mixinProps)
+
+    replaceExportDefaultNode(scriptAst, template('Object.assign(TARGET, SOURCE)')({
+      TARGET: exportDefaultNode,
+      SOURCE: mixinObjNode
+    }).expression)
   }
   // 将style合并到script中
   let stylePart = multiSource.findOnePartByScript('css|js')

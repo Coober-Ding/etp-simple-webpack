@@ -27,6 +27,7 @@ class NormalModule {
     // ioc
     this.compiler = null
     this.compileOptions = null
+    this.pathResolver = null
   }
   // 调用loader和parser获得处理后的结果
   build () {
@@ -46,7 +47,8 @@ class NormalModule {
           resource: this.resource,
           loaders: this.loaders,
           context: loaderContext,
-          compileOptions: this.compileOptions
+          compileOptions: this.compileOptions,
+          pathResolver: this.pathResolver
         },function (err, result) {
           if (err) {
             reject(err)

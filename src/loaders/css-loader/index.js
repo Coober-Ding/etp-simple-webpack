@@ -9,13 +9,11 @@ module.exports = function cssLoader (source) {
   // 调用postcss，对一些css语法进行处理
   var plugins = []
   plugins.push(urlPlugin({
-    contextPath: this.compileOptions.contextPath,
-    currentFilePath: this.resource.name
+    pathResolver: this.pathResolver
   }))
   // 处理import
   plugins.push(importPlugin({
-    contextPath: this.compileOptions.contextPath,
-    currentFilePath: this.resource.name
+    pathResolver: this.pathResolver
   }))
 
   return postcss(plugins).process(code).then(result => {

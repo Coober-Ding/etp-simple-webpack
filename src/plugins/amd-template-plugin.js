@@ -2,8 +2,6 @@ const babel = require("@babel/core/lib/transform-ast.js")
 const Source = require('../loaders/core/Source')
 const esm2AmdPlugin = require('@babel/plugin-transform-modules-amd')
 const generate = require('@babel/generator').default
-const path = require('path')
-const resolver = require('../path-resolve/index.js')
 var dynamicImportPlugin = function() {
 	return {
 		visitor: {
@@ -18,12 +16,12 @@ var dynamicImportPlugin = function() {
     }
   }
 }
-var pathResolvePlugin = function (currentFilePath) {
+var pathResolvePlugin = function (pathResolver) {
   return function () {
     return {
       visitor: {
         ImportDeclaration (path) {
-          path.node.source.value = resolver.resolve(path.node.source.value, currentFilePath, '/')
+          path.node.source.value = pathResolver.resolveImport(path.node.source.value)
         },
         // 动态import 只处理import('xxxxx')参数为String的情况
         Import (path) {
@@ -32,7 +30,7 @@ var pathResolvePlugin = function (currentFilePath) {
           }
           let importArg = path.parent.arguments[0]
           if (importArg && importArg.type === 'StringLiteral') {
-            importArg.value = resolver.resolve(importArg.value, currentFilePath, '/')
+            importArg.value = pathResolver.resolveImport(importArg.value)
           }
         }
       }
@@ -63,14 +61,14 @@ class AmdTemplatePlugin {
     })
   }
   render (_module) {
-    let currentFilePath = _module.resource.name
     let moduleName = _module.resource.name
+    let pathResolver = _module.pathResolver
     let source = _module.source
     let ast = source.content
     let result = {ast}
     
     // 处理import的路径
-    result = babel.transformFromAstSync(result.ast, null, {ast: true, code: false, plugins: [pathResolvePlugin(currentFilePath)]})
+    result = babel.transformFromAstSync(result.ast, null, {ast: true, code: false, plugins: [pathResolvePlugin(pathResolver)]})
     // 处理动态import
     result = babel.transformFromAstSync(result.ast, null, {ast: true, code: false, plugins: [dynamicImportPlugin]})
     // 处理为amd模块

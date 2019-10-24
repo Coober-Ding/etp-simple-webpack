@@ -1,6 +1,5 @@
 const postcss = require('postcss');
 const valueParser = require('postcss-value-parser');
-const pathResolver = require('../../path-resolve/index.js')
 const pluginName = 'postcss-import-plugin';
 
 function getArg(nodes) {
@@ -84,11 +83,11 @@ module.exports = postcss.plugin(
   pluginName,
   (options = {}) =>
     function process(css, result) {
-      let currentFilePath = options.currentFilePath
+      let pathResolver = options.pathResolver
       const paths = walkAtRules(css, result);
       paths.forEach((item) => {
         // 处理相对路径的url
-        item.url = pathResolver.resolve(item.url, currentFilePath, '/')
+        item.url = pathResolver.resolveImport(item.url)
         result.messages.push({
           pluginName,
           type: 'import',

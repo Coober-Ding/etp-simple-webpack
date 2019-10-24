@@ -1,5 +1,6 @@
 const NormalModule = require('./NormalModule.js')
 const RuleSet = require("webpack/lib/RuleSet")
+const PathResolver = require('../path-resolve').PathResolver
 class Loader {
   constructor (name, _module, options) {
     this.name = name,
@@ -19,6 +20,9 @@ class NormalModuleFactory {
     normalModule.compiler = this.compiler
     normalModule.loaders = this.resolveLoader(compilation.resource)
     normalModule.compileOptions = compilation.compileOptions
+    normalModule.pathResolver = new PathResolver(compilation.resource.name,
+      compilation.compileOptions.contextPath || '/',
+      compilation.compileOptions.ingnoreExpr)
     return normalModule
   }
 

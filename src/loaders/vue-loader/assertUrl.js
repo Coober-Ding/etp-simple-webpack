@@ -1,11 +1,8 @@
 "use strict";
 // vue compiler module for transforming `<tag>:<attribute>` to `require`
-const pathResolver = require('../../path-resolve/index.js')
 Object.defineProperty(exports, "__esModule", { value: true });
 
 const defaultOptions = {
-  contextPath: '/',
-  currentFilePath: '',
   tags: {
     video: ['src', 'poster'],
     source: 'src',
@@ -35,13 +32,13 @@ function transform(node, options) {
     // 找到aimed attr
     let attr = node.attrs.find(({name}) => name == aimedAttr)
     // 重写
-    rewrite(attr, options.currentFilePath, options.contextPath)
+    rewrite(attr, options.pathResolver)
   });
 }
-function rewrite(attr, currentFilePath, contextPath) {
+function rewrite(attr, pathResolver) {
   const value = attr.value;
   // only transform static URLs
   if (value.charAt(0) === '"' && value.charAt(value.length - 1) === '"') {
-    attr.value = `"${pathResolver.resolve(value.slice(1, -1), currentFilePath, contextPath)}"`
+    attr.value = `"${pathResolver.resolve(value.slice(1, -1))}"`
   }
 }
