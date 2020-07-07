@@ -57,7 +57,7 @@
     "install": "^0.13.0",
     "lodash": "^4.17.15",
     "magic-string": "^0.25.3",
-    "npm": "^6.10.3",
+    "npm": "^6.14.6",
     "path-browserify": "^1.0.0",
     "postcss": "^7.0.17",
     "postcss-value-parser": "^4.0.2",
